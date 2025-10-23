@@ -1,4 +1,4 @@
-package com.example._BackEnd;
+package com.example.smartmonitor;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
