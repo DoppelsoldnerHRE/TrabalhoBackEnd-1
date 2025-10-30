@@ -118,7 +118,7 @@ Uma nova rota foi criada para permitir que o usuário visualize todos os disposi
 
 | Método | Rota                | Descrição                                                    |
 |--------|---------------------|--------------------------------------------------------------|
-| GET    | /devices/inativos   | Retorna todos os dispositivos que não enviam dados há mais de 7 dias |
+| GET    | /devices/inativos   | Retorna todos os dispositivos que não enviam dados há mais de 1 hora |
 
 ### 📤 Exemplo de Requisição
 
@@ -150,12 +150,12 @@ Host: localhost:8080
 
 ## ⚙️ Regras e Critérios
 
-- Um dispositivo é considerado inativo se `lastActivity` for anterior a 7 dias da data atual.
+- Um dispositivo é considerado inativo se `lastActivity` for anterior a 1 hora do horario.
 - Dispositivos sem leituras registradas também são marcados como inativos.
 - A atualização de status é feita automaticamente quando uma nova leitura é registrada.
 - O status pode assumir os valores:
   - **"ATIVO"** — dispositivo enviou dados recentemente;
-  - **"INATIVO"** — sem comunicação há mais de 7 dias.
+  - **"INATIVO"** — sem comunicação há mais de 1 hora.
 
 ## 📊 Impacto na Análise do Projeto
 
