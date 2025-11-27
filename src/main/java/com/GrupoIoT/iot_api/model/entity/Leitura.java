@@ -33,7 +33,7 @@ public class Leitura {
   @JoinColumn(name = "sensor_id", nullable = false)
   private Sensor sensor;
 
-  // Método auxiliar para definir alerta baseado no sensor
+
   @PrePersist
   public void verificarAlerta() {
     if (sensor != null) {
