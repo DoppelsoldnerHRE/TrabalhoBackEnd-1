@@ -14,7 +14,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  // Erro de validação (Bean Validation)
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
     Map<String, String> errors = new HashMap<>();
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
-  // Erro de argumento ilegal (ex: email duplicado, não encontrado)
+  
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
     Map<String, Object> response = new HashMap<>();
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
-  // Erro de estado ilegal (ex: não pode deletar usuário com dispositivos)
+ 
   @ExceptionHandler(IllegalStateException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
     Map<String, Object> response = new HashMap<>();
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
   }
 
-  // Erro genérico
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleGenericError(Exception ex) {
     Map<String, Object> response = new HashMap<>();
