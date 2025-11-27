@@ -11,12 +11,11 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-  // Buscar por email (para login e validação de unicidade)
+
   Optional<Usuario> findByEmail(String email);
 
-  // Verificar se email já existe
+
   boolean existsByEmail(String email);
 
-  // Buscar por nome (com paginação)
   Page<Usuario> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 }
