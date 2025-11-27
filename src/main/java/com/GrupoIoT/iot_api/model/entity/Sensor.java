@@ -50,7 +50,7 @@ public class Sensor {
   @OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Leitura> leituras = new ArrayList<>();
 
-  // Método auxiliar para verificar se valor está fora dos limites
+
   public boolean isForaDosLimites(Double valor) {
     if (limiteMinimo != null && valor < limiteMinimo) {
       return true;
