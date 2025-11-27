@@ -53,7 +53,7 @@ public class Dispositivo {
   @OneToMany(mappedBy = "dispositivo", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Sensor> sensores = new ArrayList<>();
 
-  // Enum para Status
+
   public enum StatusDispositivo {
     ATIVO,
     INATIVO,
