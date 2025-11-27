@@ -21,10 +21,10 @@ public class DispositivoResponseDTO {
   private LocalDateTime dataCadastro;
   private LocalDateTime ultimaAtualizacao;
 
-  // Informações do usuário proprietário
+
   private Long usuarioId;
   private String usuarioNome;
 
-  // Quantidade de sensores (não retorna a lista completa)
+
   private Integer quantidadeSensores;
 }
