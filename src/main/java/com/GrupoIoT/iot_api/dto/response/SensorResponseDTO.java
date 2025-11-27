@@ -20,10 +20,10 @@ public class SensorResponseDTO {
   private Boolean ativo;
   private LocalDateTime ultimaAtualizacao;
 
-  // Informações do dispositivo
+
   private Long dispositivoId;
   private String dispositivoNome;
 
-  // Quantidade de leituras (não retorna a lista completa)
+
   private Integer quantidadeLeituras;
 }
