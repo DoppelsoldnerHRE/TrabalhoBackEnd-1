@@ -16,6 +16,5 @@ public class UsuarioResponseDTO {
   private String email;
   private LocalDateTime dataCriacao;
 
-  // Não retornamos a senha por segurança
-  // Não retornamos a lista de dispositivos para evitar recursão infinita
+
 }
