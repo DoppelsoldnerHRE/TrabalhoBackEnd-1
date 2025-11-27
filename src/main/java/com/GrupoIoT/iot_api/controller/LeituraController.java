@@ -28,21 +28,20 @@ public class LeituraController {
     this.leituraService = leituraService;
   }
 
-  // CREATE
+
   @PostMapping
   public ResponseEntity<LeituraResponseDTO> create(@Valid @RequestBody LeituraRequestDTO dto) {
     LeituraResponseDTO created = leituraService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
-  // READ ONE
   @GetMapping("/{id}")
   public ResponseEntity<LeituraResponseDTO> getOne(@PathVariable Long id) {
     LeituraResponseDTO leitura = leituraService.getOne(id);
     return ResponseEntity.ok(leitura);
   }
 
-  // READ ALL com paginação, ordenação e filtros
+
   @GetMapping
   public ResponseEntity<Page<LeituraResponseDTO>> getAll(
     @RequestParam(required = false) Long sensorId,
@@ -56,7 +55,7 @@ public class LeituraController {
     return ResponseEntity.ok(leituras);
   }
 
-  // READ últimas leituras de um sensor
+
   @GetMapping("/sensor/{sensorId}/ultimas")
   public ResponseEntity<Page<LeituraResponseDTO>> getUltimasLeituras(
     @PathVariable Long sensorId,
@@ -65,7 +64,7 @@ public class LeituraController {
     return ResponseEntity.ok(leituras);
   }
 
-  // Estatísticas de um sensor em um período
+
   @GetMapping("/sensor/{sensorId}/estatisticas")
   public ResponseEntity<EstatisticasResponseDTO> getEstatisticas(
     @PathVariable Long sensorId,
@@ -75,7 +74,6 @@ public class LeituraController {
     return ResponseEntity.ok(estatisticas);
   }
 
-  // DELETE
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     leituraService.delete(id);
