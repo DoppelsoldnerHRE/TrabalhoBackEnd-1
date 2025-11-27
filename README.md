@@ -1,186 +1,576 @@
+# 🛰️ Sistema de Gerenciamento de Dispositivos IoT - SmartMonitor
 
-# Trabalho backend
+## 👥 Integrantes do Grupo
+- **Yuri Cardoso Maciel**
+- **Jéssica Larzen Viana**
 
-Tema: Internet of things(IoT), Monitor inteligente IOT (SmartMonitor).
+---
 
-Yuri Cardoso Maciel,Jéssica Larzen Viana.
+## 📋 Descrição do Projeto
 
+O **SmartMonitor** é uma API REST completa para armazenamento, catalogação e análise de dados coletados por dispositivos IoT, como o ESP32 e Arduino UNO. O sistema foi desenvolvido para monitorar ambientes inteligentes, capturando informações como temperatura e umidade, além de avaliar a confiabilidade e eficiência dos dispositivos através do monitoramento de períodos de inatividade.
 
-## 🛰️ Descrição do Projeto
+### 🎯 Objetivo Principal
 
-O projeto consiste em uma API para armazenamento e análise de dados coletados por dispositivos IoT, como o ESP32.
-Os dispositivos são responsáveis por capturar informações ambientais — por exemplo, temperatura e umidade — e enviá-las para a API, que realiza o armazenamento, catalogação e monitoramento dos dados coletados.
-Será realizado uma comparação entre a efetividade os dois micro-controladores mais populares, para determinar qual seria mais eficaz para a analise de dados por uma larga escala de tempo.
+Avaliar a **viabilidade do uso de dispositivos IoT de baixo custo** (ESP32, Arduino) para coleta massiva de dados em larga escala. Embora economicamente acessíveis, esses dispositivos apresentam limitações em performance, estabilidade e disponibilidade. O projeto busca mensurar o impacto dessas limitações e determinar sua adequação para aplicações de monitoramento contínuo.
 
-Além da coleta em si, o sistema também realiza uma análise de períodos de inatividade dos dispositivos, permitindo avaliar sua confiabilidade e eficiência no contexto de coleta contínua em larga escala.
+---
 
-## 🎯 Objetivo
+## 🛠️ Tecnologias Utilizadas
 
-O principal objetivo do projeto é avaliar a viabilidade do uso de dispositivos IoT de baixo custo, como o ESP32, para coleta massiva de dados.
-Embora esses dispositivos sejam acessíveis economicamente, eles apresentam limitações em performance, estabilidade e disponibilidade. Assim, o estudo busca mensurar o impacto dessas limitações e determinar se o uso do ESP32 é adequado para aplicações de coleta de dados em larga escala.
+### Backend
+- **Java 17+**
+- **Spring Boot 4.0.0**
+- **Spring Data JPA**
+- **Bean Validation**
+- **Lombok**
 
-ESP32, arduino UNO, Arduino IDE, Java SpringBoot, H2, Java 17+, Spring Data.
+### Banco de Dados
+- **PostgreSQL 16**
+- **Hibernate ORM 7.1.8**
 
-## 🧱 Entidade: Device (Dispositivo)
+### Documentação
+- **SpringDoc OpenAPI (Swagger)**
 
-Representa um dispositivo IoT cadastrado no sistema.
+### Ferramentas
+- **Maven**
+- **Docker & Docker Compose**
+- **Git**
 
-| Campo          | Tipo          | Descrição                                     |
-| -------------- | ------------- | --------------------------------------------- |
-| `id`           | Long          | Identificador único do dispositivo            |
-| `name`         | String        | Nome ou apelido do dispositivo                |
-| `location`     | String        | Localização física                            |
-| `lastActivity` | LocalDateTime | Data/hora da última comunicação               |
-| `status`       | String        | Indica se o dispositivo está ativo ou inativo |
-🔗 Relação: Um Device pode ter várias Reading associadas (1:N).
+### Hardware IoT (Integração Futura)
+- **ESP32**
+- **Arduino UNO**
+- **Arduino IDE**
 
-## 🌡️ Entidade: Reading (Leitura de Sensor)
+---
 
-Representa uma leitura de dados enviada por um dispositivo IoT.
+## 🏗️ Arquitetura do Sistema
 
-| Campo         | Tipo          | Descrição                        |
-| ------------- | ------------- | -------------------------------- |
-| `id`          | Long          | Identificador da leitura         |
-| `device`      | Device        | Dispositivo que enviou a leitura |
-| `temperature` | Double        | Temperatura medida               |
-| `humidity`    | Double        | Umidade medida                   |
-| `timestamp`   | LocalDateTime | Data/hora da coleta              |
-🔗 Relação: Cada leitura pertence a um único Device.
+O projeto segue uma arquitetura em camadas com separação clara de responsabilidades:
+```
+┌─────────────────────────────────────┐
+│        Controllers (REST)           │  ← Endpoints HTTP
+├─────────────────────────────────────┤
+│           Services                  │  ← Lógica de Negócio
+├─────────────────────────────────────┤
+│         Repositories                │  ← Acesso ao Banco
+├─────────────────────────────────────┤
+│      Entities (JPA/Hibernate)       │  ← Modelo de Dados
+└─────────────────────────────────────┘
+              ↓
+      ┌──────────────┐
+      │  PostgreSQL  │
+      └──────────────┘
+```
 
-## 📊 InactivityLog (Log de Inatividade)
+---
 
-Registra períodos em que um dispositivo ficou sem enviar dados.
+## 📦 Entidades do Sistema
 
-| Campo             | Tipo          | Descrição                         |
-| ----------------- | ------------- | --------------------------------- |
-| `id`              | Long          | Identificador do log              |
-| `device`          | Device        | Dispositivo que ficou inativo     |
-| `startTime`       | LocalDateTime | Início da inatividade             |
-| `endTime`         | LocalDateTime | Fim da inatividade                |
-| `durationMinutes` | Long          | Duração da inatividade em minutos |
+### 1. 👤 Usuario
+Representa os proprietários e gerenciadores dos dispositivos IoT.
 
+| Campo | Tipo | Descrição | Restrições |
+|-------|------|-----------|------------|
+| `id` | Long | Identificador único | PK, Auto-increment |
+| `nome` | String | Nome completo do usuário | Obrigatório, máx. 100 caracteres |
+| `email` | String | Email para login | Obrigatório, único, formato válido |
+| `senha` | String | Senha criptografada | Obrigatório, mín. 8 caracteres |
+| `dataCriacao` | LocalDateTime | Data de cadastro | Auto-gerado |
 
-# 📖 Descrição da Carta-Desafio
+**Relacionamentos:**
+- Um usuário pode ter vários dispositivos (1:N com Dispositivo)
 
-A carta "Inatividade" exige que uma das entidades possua um atributo que registre a última atualização, e que exista uma rota capaz de listar todos os registros inativos por mais de uma semana.
+---
 
-No contexto deste projeto IoT, a funcionalidade foi implementada na entidade Device, representando dispositivos IoT que enviam dados periodicamente (como ESP32). Assim, o sistema consegue identificar quais dispositivos estão inativos há mais de 7 dias, o que permite avaliar sua estabilidade e confiabilidade.
+### 2. 📱 Dispositivo
+Representa um dispositivo IoT físico (ESP32, Arduino, etc.).
 
-## 🧱 Entidade Afetada: Device
+| Campo | Tipo | Descrição | Restrições |
+|-------|------|-----------|------------|
+| `id` | Long | Identificador único | PK, Auto-increment |
+| `nome` | String | Nome identificador | Obrigatório, máx. 100 caracteres |
+| `tipo` | String | Categoria do dispositivo | Obrigatório |
+| `localizacao` | String | Local de instalação | Obrigatório, máx. 200 caracteres |
+| `status` | Enum | Estado atual | ATIVO, INATIVO, MANUTENCAO |
+| `enderecoMac` | String | Endereço MAC | Obrigatório, único, formato XX:XX:XX:XX:XX:XX |
+| `dataCadastro` | LocalDateTime | Data de cadastro | Auto-gerado |
+| `ultimaAtualizacao` | LocalDateTime | ⚠️ Última atualização | Auto-atualizado (CARTA-DESAFIO) |
+| `usuarioId` | Long | ID do usuário proprietário | FK, Obrigatório |
 
-A entidade Device foi estendida para incluir o campo `lastActivity`, que indica a data e hora da última leitura recebida.
+**Relacionamentos:**
+- Pertence a um usuário (N:1 com Usuario)
+- Possui vários sensores (1:N com Sensor)
 
+---
+
+### 3. 📡 Sensor
+Componentes de medição acoplados aos dispositivos.
+
+| Campo | Tipo | Descrição | Restrições |
+|-------|------|-----------|------------|
+| `id` | Long | Identificador único | PK, Auto-increment |
+| `nome` | String | Nome identificador | Obrigatório, máx. 100 caracteres |
+| `tipoSensor` | String | Tipo de medição | Obrigatório (ex: "temperatura", "umidade") |
+| `unidadeMedida` | String | Unidade | Obrigatório (ex: "°C", "%") |
+| `limiteMinimo` | Double | Valor mínimo aceitável | Opcional |
+| `limiteMaximo` | Double | Valor máximo aceitável | Opcional |
+| `ativo` | Boolean | Status operacional | Padrão: true |
+| `ultimaAtualizacao` | LocalDateTime | ⚠️ Última atualização | Auto-atualizado (CARTA-DESAFIO) |
+| `dispositivoId` | Long | ID do dispositivo | FK, Obrigatório |
+
+**Relacionamentos:**
+- Pertence a um dispositivo (N:1 com Dispositivo)
+- Gera várias leituras (1:N com Leitura)
+
+---
+
+### 4. 🌡️ Leitura
+Dados coletados pelos sensores ao longo do tempo.
+
+| Campo | Tipo | Descrição | Restrições |
+|-------|------|-----------|------------|
+| `id` | Long | Identificador único | PK, Auto-increment |
+| `valor` | Double | Valor medido | Obrigatório |
+| `dataHora` | LocalDateTime | Momento da coleta | Auto-gerado |
+| `alerta` | Boolean | Indica se ultrapassou limites | Auto-calculado |
+| `sensorId` | Long | ID do sensor | FK, Obrigatório |
+
+**Relacionamentos:**
+- Pertence a um sensor (N:1 com Sensor)
+
+**Regras de Negócio:**
+- Alerta é `true` quando o valor está fora dos limites configurados no sensor
+- Ao registrar leitura, o `ultimaAtualizacao` do sensor é atualizado automaticamente
+
+---
+
+## 🔗 Diagrama de Relacionamentos
+```
+┌──────────────┐
+│   Usuario    │
+│   (1)        │
+└──────┬───────┘
+       │
+       │ 1:N
+       │
+┌──────▼───────────┐
+│   Dispositivo    │
+│   (N)            │
+│ ultimaAtualizacao│ ⚠️ CARTA-DESAFIO
+└──────┬───────────┘
+       │
+       │ 1:N
+       │
+┌──────▼───────────┐
+│     Sensor       │
+│   (N)            │
+│ ultimaAtualizacao│ ⚠️ CARTA-DESAFIO
+└──────┬───────────┘
+       │
+       │ 1:N
+       │
+┌──────▼───────────┐
+│    Leitura       │
+│   (N)            │
+└──────────────────┘
+```
+
+---
+
+## 🎯 Carta-Desafio: Monitoramento de Inatividade
+
+### 📖 Descrição
+
+A carta-desafio **"Inativos"** exige que entidades possuam um atributo de última atualização e uma rota capaz de listar registros inativos por mais de **7 dias**.
+
+### 🛠️ Implementação
+
+#### 1. Atributo `ultimaAtualizacao`
+
+Implementado nas entidades **Dispositivo** e **Sensor** usando `@UpdateTimestamp`:
 ```java
-@Entity
-public class Device {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-    private String location;
-    private LocalDateTime lastActivity;
-    private String status;
-
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    private List<Reading> readings;
-}
+@UpdateTimestamp
+@Column(nullable = false)
+private LocalDateTime ultimaAtualizacao;
 ```
 
-## 🔁 Lógica de Atualização de Atividade
+**Comportamento:**
+- Atualizado automaticamente a cada modificação da entidade
+- Para sensores: também atualizado ao registrar novas leituras
+- Permite calcular o tempo desde a última atividade
 
-Sempre que uma nova leitura (Reading) é recebida pela rota `POST /readings`, o sistema automaticamente atualiza o campo `lastActivity` do dispositivo correspondente.
+#### 2. Lógica de Detecção
 
+Queries JPQL nos repositories para buscar entidades inativas:
 ```java
-device.setLastActivity(LocalDateTime.now());
-device.setStatus("ATIVO");
-deviceRepository.save(device);
+@Query("SELECT d FROM Dispositivo d WHERE d.ultimaAtualizacao < :dataLimite")
+Page<Dispositivo> findInativos(@Param("dataLimite") LocalDateTime dataLimite, Pageable pageable);
 ```
 
-Essa atualização garante que o último contato do dispositivo com a API seja sempre registrado.
+**Critério:** `dataLimite = LocalDateTime.now().minusDays(7)`
 
-## ⏱️ Detecção de Inatividade
+#### 3. Rotas Implementadas
 
-Um serviço (DeviceService) foi criado para detectar dispositivos sem atividade há mais de 7 dias. A lógica realiza uma consulta no banco de dados comparando o `lastActivity` com a data atual:
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/dispositivos/inativos` | Lista dispositivos sem atualização há 7+ dias |
+| GET | `/api/dispositivos/inativos/count` | Conta dispositivos inativos |
+| GET | `/api/sensores/inativos` | Lista sensores sem atualização há 7+ dias |
+| GET | `/api/sensores/inativos/count` | Conta sensores inativos |
 
-```java
-public List<Device> getInactiveDevices() {
-    LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-    return deviceRepository.findByLastActivityBefore(sevenDaysAgo);
-}
-```
+#### 4. Exemplo de Resposta
 
-## 🌐 Nova Rota: /devices/inativos
-
-Uma nova rota foi criada para permitir que o usuário visualize todos os dispositivos inativos.
-
-### 📍 Endpoint
-
-| Método | Rota                | Descrição                                                    |
-|--------|---------------------|--------------------------------------------------------------|
-| GET    | /devices/inativos   | Retorna todos os dispositivos que não enviam dados há mais de 1 hora |
-
-### 📤 Exemplo de Requisição
-
-```http
-GET /devices/inativos HTTP/1.1
-Host: localhost:8080
-```
-
-### 📥 Exemplo de Resposta (200 OK)
-
+**GET** `/api/dispositivos/inativos`
 ```json
-[
-  {
-    "id": 1,
-    "name": "ESP32-LAB1",
-    "location": "Laboratório 1",
-    "lastActivity": "2025-10-05T14:23:00",
-    "status": "INATIVO"
-  },
-  {
-    "id": 3,
-    "name": "ESP32-EXT01",
-    "location": "Área Externa",
-    "lastActivity": "2025-10-01T08:12:45",
-    "status": "INATIVO"
-  }
-]
+{
+  "content": [
+    {
+      "id": 15,
+      "nome": "ESP32-LAB1",
+      "tipo": "DISPOSITIVO",
+      "localizacao": "Laboratório 1",
+      "ultimaAtualizacao": "2025-11-10T14:23:00",
+      "diasInativo": 16
+    }
+  ],
+  "pageNumber": 0,
+  "pageSize": 20,
+  "totalElements": 1,
+  "totalPages": 1
+}
 ```
 
-## ⚙️ Regras e Critérios
+### 📊 Impacto no Objetivo do Projeto
 
-- Um dispositivo é considerado inativo se `lastActivity` for anterior a 1 hora do horario.
-- Dispositivos sem leituras registradas também são marcados como inativos.
-- A atualização de status é feita automaticamente quando uma nova leitura é registrada.
-- O status pode assumir os valores:
-  - **"ATIVO"** — dispositivo enviou dados recentemente;
-  - **"INATIVO"** — sem comunicação há mais de 1 hora.
+O monitoramento de inatividade é **essencial** para avaliar a viabilidade de dispositivos IoT de baixo custo:
 
-## 📊 Impacto na Análise do Projeto
+✅ **Identifica falhas de conexão** - Detecta dispositivos com problemas de comunicação  
+✅ **Métricas de confiabilidade** - Fornece dados sobre tempo médio de atividade  
+✅ **Avaliação de estabilidade** - Permite comparar performance entre ESP32 e Arduino  
+✅ **Manutenção proativa** - Alerta sobre dispositivos que precisam de atenção
 
-Essa funcionalidade é essencial para o objetivo principal do projeto, que é avaliar a viabilidade de uso de dispositivos IoT de baixo custo (como o ESP32) em ambientes de coleta de dados contínua.
+---
 
-Com o monitoramento de inatividade:
+## 🌐 API - Endpoints Disponíveis
 
-- É possível identificar falhas de conexão ou instabilidade do hardware;
-- A API fornece métricas confiáveis sobre tempo médio de atividade e intervalos de falha;
-- O sistema se torna uma base sólida para estudos sobre eficiência operacional de redes IoT.
+### 👤 Usuários (`/api/usuarios`)
 
-## ✅ Códigos HTTP Utilizados
+| Método | Rota | Descrição | Códigos HTTP |
+|--------|------|-----------|--------------|
+| POST | `/api/usuarios` | Criar usuário | 201, 400 |
+| GET | `/api/usuarios` | Listar todos | 200 |
+| GET | `/api/usuarios/{id}` | Buscar por ID | 200, 404 |
+| GET | `/api/usuarios?nome={nome}` | Filtrar por nome | 200 |
+| PUT | `/api/usuarios/{id}` | Atualizar | 200, 400, 404 |
+| DELETE | `/api/usuarios/{id}` | Deletar | 204, 404, 409 |
 
-| Código | Significado              | Uso                                                    |
-|--------|--------------------------|--------------------------------------------------------|
-| 200    | OK                       | Lista de dispositivos inativos retornada com sucesso   |
-| 404    | Not Found                | Nenhum dispositivo inativo encontrado                  |
-| 500    | Internal Server Error    | Problemas de conexão ou lógica de negócio              |
+---
 
-## 🧩 Conclusão
+### 📱 Dispositivos (`/api/dispositivos`)
 
-A carta-desafio "Inatividade" foi completamente implementada e integrada à entidade Device, permitindo à API:
+| Método | Rota | Descrição | Códigos HTTP |
+|--------|------|-----------|--------------|
+| POST | `/api/dispositivos` | Criar dispositivo | 201, 400 |
+| GET | `/api/dispositivos` | Listar todos | 200 |
+| GET | `/api/dispositivos/{id}` | Buscar por ID | 200, 404 |
+| GET | `/api/dispositivos?filtros` | Filtrar (nome, tipo, status, etc) | 200 |
+| GET | `/api/dispositivos/inativos` | ⚠️ **Listar inativos (7+ dias)** | 200 |
+| GET | `/api/dispositivos/inativos/count` | ⚠️ **Contar inativos** | 200 |
+| PUT | `/api/dispositivos/{id}` | Atualizar | 200, 400, 404 |
+| DELETE | `/api/dispositivos/{id}` | Deletar | 204, 404 |
 
-- Monitorar automaticamente a atividade dos dispositivos IoT;
-- Detectar e exibir períodos de inatividade;
-- Fornecer informações essenciais para a análise de viabilidade e estabilidade dos dispositivos ESP32 em ambientes reais.
+**Filtros disponíveis:**
+- `nome` - Busca parcial (case-insensitive)
+- `tipo` - Filtrar por tipo
+- `localizacao` - Filtrar por localização
+- `status` - ATIVO, INATIVO, MANUTENCAO
+- `usuarioId` - Dispositivos de um usuário específico
+- `page`, `size`, `sort` - Paginação e ordenação
+
+---
+
+### 📡 Sensores (`/api/sensores`)
+
+| Método | Rota | Descrição | Códigos HTTP |
+|--------|------|-----------|--------------|
+| POST | `/api/sensores` | Criar sensor | 201, 400 |
+| GET | `/api/sensores` | Listar todos | 200 |
+| GET | `/api/sensores/{id}` | Buscar por ID | 200, 404 |
+| GET | `/api/sensores?filtros` | Filtrar (tipo, dispositivo, ativo) | 200 |
+| GET | `/api/sensores/inativos` | ⚠️ **Listar inativos (7+ dias)** | 200 |
+| GET | `/api/sensores/inativos/count` | ⚠️ **Contar inativos** | 200 |
+| PUT | `/api/sensores/{id}` | Atualizar | 200, 400, 404 |
+| DELETE | `/api/sensores/{id}` | Deletar | 204, 404 |
+
+---
+
+### 🌡️ Leituras (`/api/leituras`)
+
+| Método | Rota | Descrição | Códigos HTTP |
+|--------|------|-----------|--------------|
+| POST | `/api/leituras` | Registrar leitura | 201, 400 |
+| GET | `/api/leituras` | Listar todas | 200 |
+| GET | `/api/leituras/{id}` | Buscar por ID | 200, 404 |
+| GET | `/api/leituras?filtros` | Filtrar (sensor, período, alerta) | 200 |
+| GET | `/api/leituras/sensor/{id}/ultimas` | Últimas leituras de um sensor | 200 |
+| GET | `/api/leituras/sensor/{id}/estatisticas` | Estatísticas (média, min, max) | 200 |
+| DELETE | `/api/leituras/{id}` | Deletar | 204, 404 |
+
+---
+
+## 📊 Recursos Implementados
+
+### ✅ Requisitos Obrigatórios
+
+- ✅ Serviço backend REST completo
+- ✅ Arquitetura em camadas (Controller, Service, Repository)
+- ✅ 4 entidades com relacionamentos (1:N, N:N)
+- ✅ CRUD completo para todas as entidades
+- ✅ Paginação e ordenação em todas as listagens
+- ✅ Filtros de busca por múltiplos critérios
+- ✅ DTOs para entrada e saída
+- ✅ Validação de dados com Bean Validation
+- ✅ Códigos HTTP apropriados
+- ✅ Persistência com PostgreSQL
+- ✅ Exception Handler global
+
+### ⚠️ Carta-Desafio: Inativos
+
+- ✅ Atributo `ultimaAtualizacao` em Dispositivo e Sensor
+- ✅ Rotas `/inativos` para ambas as entidades
+- ✅ Cálculo de dias de inatividade
+- ✅ Query JPQL personalizada
+- ✅ Paginação e ordenação dos inativos
+
+### 🌟 Requisitos Extras
+
+- ✅ PostgreSQL (banco diferente do H2)
+- ✅ Swagger/OpenAPI (documentação automática)
+- ⚠️ DTOs bem estruturados
+- ⚠️ Exception handling robusto
+
+---
+
+## 📋 Exemplos de Requisições
+
+### 1. Criar Usuário
+```http
+POST /api/usuarios
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "senha": "senha12345"
+}
+```
+
+**Resposta (201 Created):**
+```json
+{
+  "id": 1,
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "dataCriacao": "2025-11-26T10:30:00"
+}
+```
+
+---
+
+### 2. Criar Dispositivo IoT
+```http
+POST /api/dispositivos
+Content-Type: application/json
+
+{
+  "nome": "ESP32-LAB1",
+  "tipo": "ESP32",
+  "localizacao": "Laboratório 1",
+  "status": "ATIVO",
+  "enderecoMac": "AA:BB:CC:DD:EE:FF",
+  "usuarioId": 1
+}
+```
+
+---
+
+### 3. Criar Sensor de Temperatura
+```http
+POST /api/sensores
+Content-Type: application/json
+
+{
+  "nome": "Sensor Temperatura",
+  "tipoSensor": "temperatura",
+  "unidadeMedida": "°C",
+  "limiteMinimo": 15.0,
+  "limiteMaximo": 30.0,
+  "ativo": true,
+  "dispositivoId": 1
+}
+```
+
+---
+
+### 4. Registrar Leitura
+```http
+POST /api/leituras
+Content-Type: application/json
+
+{
+  "valor": 25.5,
+  "sensorId": 1
+}
+```
+
+**Resposta (201 Created):**
+```json
+{
+  "id": 1,
+  "valor": 25.5,
+  "dataHora": "2025-11-26T10:35:00",
+  "alerta": false,
+  "sensorId": 1,
+  "sensorNome": "Sensor Temperatura",
+  "unidadeMedida": "°C",
+  "dispositivoId": 1,
+  "dispositivoNome": "ESP32-LAB1"
+}
+```
+
+---
+
+### 5. Listar Dispositivos Inativos (CARTA-DESAFIO)
+```http
+GET /api/dispositivos/inativos?page=0&size=10&sort=ultimaAtualizacao,asc
+```
+
+---
+
+### 6. Estatísticas de Sensor
+```http
+GET /api/leituras/sensor/1/estatisticas?dataInicio=2025-11-01T00:00:00&dataFim=2025-11-26T23:59:59
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "sensorId": 1,
+  "sensorNome": "Sensor Temperatura",
+  "dataInicio": "2025-11-01T00:00:00",
+  "dataFim": "2025-11-26T23:59:59",
+  "totalLeituras": 1234,
+  "totalAlertas": 15,
+  "valorMedio": 24.3,
+  "valorMinimo": 18.5,
+  "valorMaximo": 31.2,
+  "unidadeMedida": "°C"
+}
+```
+
+---
+
+## ⚙️ Como Executar o Projeto Localmente
+
+### Pré-requisitos
+
+- Java 17 ou superior
+- Docker e Docker Compose
+- Maven 3.9+
+- Git
+
+### Passo a Passo
+
+#### 1. Clonar o Repositório
+```bash
+git clone https://github.com/seu-usuario/iot-api.git
+cd iot-api
+```
+
+#### 2. Configurar Banco de Dados (Docker)
+```bash
+docker-compose up -d
+```
+
+Isso iniciará um container PostgreSQL na porta 5432.
+
+#### 3. Verificar Configuração
+
+Edite `src/main/resources/application.properties` se necessário:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/iot_db
+spring.datasource.username=iot_user
+spring.datasource.password=iot_password
+```
+
+#### 4. Compilar e Executar
+
+**Linux/Mac:**
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+**Windows:**
+```bash
+.\mvnw.cmd clean install
+.\mvnw.cmd spring-boot:run
+```
+
+#### 5. Acessar a API
+
+- **API Base:** `http://localhost:8080/api`
+- **Swagger UI:** `http://localhost:8080/swagger-ui.html`
+- **API Docs:** `http://localhost:8080/api-docs`
+
+---
+
+## 🧪 Testando a API
+
+### Opção 1: Swagger UI (Recomendado)
+
+1. Acesse `http://localhost:8080/swagger-ui.html`
+2. Escolha um endpoint
+3. Clique em "Try it out"
+4. Preencha os dados
+5. Clique em "Execute"
+
+### Opção 2: cURL
+```bash
+# Criar usuário
+curl -X POST http://localhost:8080/api/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"Teste","email":"teste@email.com","senha":"senha12345"}'
+
+# Listar dispositivos inativos
+curl http://localhost:8080/api/dispositivos/inativos
+```
+
+---
+
+## 🚧 Limitações Conhecidas
+
+1. **Autenticação:** O sistema não possui autenticação/autorização implementada
+2. **Criptografia de Senha:** Senhas são armazenadas em texto plano (TODO: implementar BCrypt)
+3. **Rate Limiting:** Não há limite de requisições por IP/usuário
+4. **Notificações:** Sistema não envia alertas automáticos para dispositivos inativos
+5. **Cache:** Não há cache implementado para consultas frequentes
+6. **Integração Real com ESP32:** API está preparada mas não há código Arduino/ESP32 neste repositório
+
+---
+
+## 🔮 Melhorias Futuras
+
+- [ ] Implementar autenticação JWT
+- [ ] Criptografar senhas com BCrypt
+- [ ] Sistema de notificações por email/webhook
+- [ ] Dashboard web para visualização de dados
+- [ ] Código Arduino para ESP32/Arduino UNO
+- [ ] Testes automatizados (unitários e integração)
+- [ ] Deploy em ambiente de produção (AWS/Railway/Render)
+- [ ] Cache com Redis para estatísticas
+- [ ] WebSocket para atualizações em tempo real
 
 
+**Desenvolvido com ☕ e Spring Boot**
