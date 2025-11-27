@@ -24,21 +24,19 @@ public class UsuarioController {
     this.usuarioService = usuarioService;
   }
 
-  // CREATE
+
   @PostMapping
   public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioRequestDTO dto) {
     UsuarioResponseDTO created = usuarioService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
-  // READ ONE
   @GetMapping("/{id}")
   public ResponseEntity<UsuarioResponseDTO> getOne(@PathVariable Long id) {
     UsuarioResponseDTO usuario = usuarioService.getOne(id);
     return ResponseEntity.ok(usuario);
   }
 
-  // READ ALL com paginação e filtro opcional
   @GetMapping
   public ResponseEntity<Page<UsuarioResponseDTO>> getAll(
     @RequestParam(required = false) String nome,
@@ -53,7 +51,7 @@ public class UsuarioController {
     return ResponseEntity.ok(usuarios);
   }
 
-  // UPDATE
+
   @PutMapping("/{id}")
   public ResponseEntity<UsuarioResponseDTO> update(
     @PathVariable Long id,
@@ -62,7 +60,7 @@ public class UsuarioController {
     return ResponseEntity.ok(updated);
   }
 
-  // DELETE
+
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     usuarioService.delete(id);
