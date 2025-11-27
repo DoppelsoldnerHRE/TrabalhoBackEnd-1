@@ -28,21 +28,21 @@ public class SensorController {
     this.sensorService = sensorService;
   }
 
-  // CREATE
+
   @PostMapping
   public ResponseEntity<SensorResponseDTO> create(@Valid @RequestBody SensorRequestDTO dto) {
     SensorResponseDTO created = sensorService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
-  // READ ONE
+
   @GetMapping("/{id}")
   public ResponseEntity<SensorResponseDTO> getOne(@PathVariable Long id) {
     SensorResponseDTO sensor = sensorService.getOne(id);
     return ResponseEntity.ok(sensor);
   }
 
-  // READ ALL com paginação, ordenação e filtros
+
   @GetMapping
   public ResponseEntity<Page<SensorResponseDTO>> getAll(
     @RequestParam(required = false) String nome,
@@ -56,7 +56,6 @@ public class SensorController {
     return ResponseEntity.ok(sensores);
   }
 
-  // 🎯 CARTA-DESAFIO: Listar sensores inativos (7+ dias sem atualização)
   @GetMapping("/inativos")
   public ResponseEntity<Page<InativoResponseDTO>> getInativos(
     @PageableDefault(size = 20, sort = "ultimaAtualizacao", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -64,7 +63,7 @@ public class SensorController {
     return ResponseEntity.ok(inativos);
   }
 
-  // 🎯 CARTA-DESAFIO: Contar sensores inativos
+
   @GetMapping("/inativos/count")
   public ResponseEntity<Map<String, Object>> countInativos() {
     long count = sensorService.countInativos();
@@ -74,7 +73,7 @@ public class SensorController {
     return ResponseEntity.ok(response);
   }
 
-  // UPDATE
+
   @PutMapping("/{id}")
   public ResponseEntity<SensorResponseDTO> update(
     @PathVariable Long id,
@@ -83,7 +82,6 @@ public class SensorController {
     return ResponseEntity.ok(updated);
   }
 
-  // DELETE
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     sensorService.delete(id);
