@@ -484,7 +484,7 @@ GET /api/leituras/sensor/1/estatisticas?dataInicio=2025-11-01T00:00:00&dataFim=2
 
 #### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/seu-usuario/iot-api.git
+git clone https://github.com/DoppelsoldnerHRE/TrabalhoBackEnd-1/tree/main
 cd iot-api
 ```
 
