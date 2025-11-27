@@ -16,7 +16,7 @@ public class EstatisticasResponseDTO {
   private LocalDateTime dataInicio;
   private LocalDateTime dataFim;
 
-  // Estatísticas
+
   private Long totalLeituras;
   private Long totalAlertas;
   private Double valorMedio;
