@@ -16,12 +16,12 @@ public class LeituraResponseDTO {
   private LocalDateTime dataHora;
   private Boolean alerta;
 
-  // Informações do sensor
+
   private Long sensorId;
   private String sensorNome;
   private String unidadeMedida;
 
-  // Informações do dispositivo (para contexto)
+
   private Long dispositivoId;
   private String dispositivoNome;
 }
