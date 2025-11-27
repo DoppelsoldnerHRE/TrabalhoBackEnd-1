@@ -29,21 +29,21 @@ public class DispositivoController {
     this.dispositivoService = dispositivoService;
   }
 
-  // CREATE
+
   @PostMapping
   public ResponseEntity<DispositivoResponseDTO> create(@Valid @RequestBody DispositivoRequestDTO dto) {
     DispositivoResponseDTO created = dispositivoService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
-  // READ ONE
+
   @GetMapping("/{id}")
   public ResponseEntity<DispositivoResponseDTO> getOne(@PathVariable Long id) {
     DispositivoResponseDTO dispositivo = dispositivoService.getOne(id);
     return ResponseEntity.ok(dispositivo);
   }
 
-  // READ ALL com paginação, ordenação e filtros
+
   @GetMapping
   public ResponseEntity<Page<DispositivoResponseDTO>> getAll(
     @RequestParam(required = false) String nome,
@@ -58,7 +58,7 @@ public class DispositivoController {
     return ResponseEntity.ok(dispositivos);
   }
 
-  // 🎯 CARTA-DESAFIO: Listar dispositivos inativos (7+ dias sem atualização)
+
   @GetMapping("/inativos")
   public ResponseEntity<Page<InativoResponseDTO>> getInativos(
     @PageableDefault(size = 20, sort = "ultimaAtualizacao", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -66,7 +66,6 @@ public class DispositivoController {
     return ResponseEntity.ok(inativos);
   }
 
-  // 🎯 CARTA-DESAFIO: Contar dispositivos inativos
   @GetMapping("/inativos/count")
   public ResponseEntity<Map<String, Object>> countInativos() {
     long count = dispositivoService.countInativos();
@@ -76,7 +75,7 @@ public class DispositivoController {
     return ResponseEntity.ok(response);
   }
 
-  // UPDATE
+
   @PutMapping("/{id}")
   public ResponseEntity<DispositivoResponseDTO> update(
     @PathVariable Long id,
@@ -85,7 +84,7 @@ public class DispositivoController {
     return ResponseEntity.ok(updated);
   }
 
-  // DELETE
+
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     dispositivoService.delete(id);
