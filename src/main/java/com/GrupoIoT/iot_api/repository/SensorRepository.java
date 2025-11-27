@@ -14,30 +14,30 @@ import java.util.List;
 @Repository
 public interface SensorRepository extends JpaRepository<Sensor, Long> {
 
-  // Buscar sensores de um dispositivo
+
   Page<Sensor> findByDispositivoId(Long dispositivoId, Pageable pageable);
 
-  // Buscar por tipo de sensor
+
   Page<Sensor> findByTipoSensorContainingIgnoreCase(String tipoSensor, Pageable pageable);
 
-  // Buscar sensores ativos
+
   Page<Sensor> findByAtivo(Boolean ativo, Pageable pageable);
 
-  // Buscar sensores ativos de um dispositivo
+
   Page<Sensor> findByDispositivoIdAndAtivo(Long dispositivoId, Boolean ativo, Pageable pageable);
 
-  // Buscar por nome
+
   Page<Sensor> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
-  // 🎯 CARTA-DESAFIO INATIVOS: Sensores sem atualização há mais de 7 dias
+ 
   @Query("SELECT s FROM Sensor s WHERE s.ultimaAtualizacao < :dataLimite")
   Page<Sensor> findInativos(@Param("dataLimite") LocalDateTime dataLimite, Pageable pageable);
 
-  // Contar sensores inativos
+
   @Query("SELECT COUNT(s) FROM Sensor s WHERE s.ultimaAtualizacao < :dataLimite")
   long countInativos(@Param("dataLimite") LocalDateTime dataLimite);
 
-  // Buscar sensores inativos de um dispositivo específico
+
   @Query("SELECT s FROM Sensor s WHERE s.dispositivo.id = :dispositivoId AND s.ultimaAtualizacao < :dataLimite")
   Page<Sensor> findInativosByDispositivo(
     @Param("dispositivoId") Long dispositivoId,
@@ -45,7 +45,7 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
     Pageable pageable
   );
 
-  // Buscar sensores inativos de um usuário
+
   @Query("SELECT s FROM Sensor s WHERE s.dispositivo.usuario.id = :usuarioId AND s.ultimaAtualizacao < :dataLimite")
   Page<Sensor> findInativosByUsuario(
     @Param("usuarioId") Long usuarioId,
@@ -53,7 +53,7 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
     Pageable pageable
   );
 
-  // Buscar com filtros combinados
+
   @Query("SELECT s FROM Sensor s WHERE " +
     "(:nome IS NULL OR LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
     "(:tipoSensor IS NULL OR LOWER(s.tipoSensor) LIKE LOWER(CONCAT('%', :tipoSensor, '%'))) AND " +
@@ -67,6 +67,5 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
     Pageable pageable
   );
 
-  // Listar todos os sensores (sem paginação) - útil para exportações
   List<Sensor> findByDispositivoId(Long dispositivoId);
 }
