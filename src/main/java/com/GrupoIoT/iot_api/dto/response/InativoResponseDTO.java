@@ -13,13 +13,13 @@ public class InativoResponseDTO {
 
   private Long id;
   private String nome;
-  private String tipo; // "DISPOSITIVO" ou "SENSOR"
+  private String tipo; 
   private LocalDateTime ultimaAtualizacao;
   private Long diasInativo;
 
-  // Informações adicionais
-  private String localizacao; // Para dispositivos
-  private String tipoSensor; // Para sensores
-  private Long dispositivoId; // Para sensores
-  private String dispositivoNome; // Para sensores
+
+  private String localizacao; 
+  private String tipoSensor; 
+  private Long dispositivoId; 
+  private String dispositivoNome; 
 }
